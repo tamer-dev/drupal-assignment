@@ -14,7 +14,6 @@ function users_management_install() {
  * Implements hook_block_info().
  */
 function users_management_block_info() {
-    // print_r(block_list('content'));
     $blocks['user_info'] = array(
       // The name that will appear in the block list.
       'info' => 'User info',
@@ -118,8 +117,6 @@ function add_roles()
        $role2->name = 'Viewer';
        user_role_save($role2);
     }
-    //  $photographer_role = user_role_load_by_name('photographer');
-    //  $photographer_id = $photographer_role->rid;
 }
 
 // function delete_custom_fields($fields)
