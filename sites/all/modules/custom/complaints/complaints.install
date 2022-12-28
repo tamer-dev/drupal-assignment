@@ -52,9 +52,6 @@ function _complaints_installed_fields() {
             'field_name' => 'file_attachment',
             'label' => 'File Attachment',
             'type' => 'file',
-            // 'settings' => array(
-            //     'file_extensions'  => 'pdf', 
-            // )
         ),
         'workflow_status' => array(
             'field_name' => 'workflow_status',
@@ -112,9 +109,6 @@ function _complaints_installed_instances() {
             'field_name' => 'file_attachment',
             'type' => 'file',
             'label' => 'File Attachment',
-            // 'widget' => array(
-            //     'type' => 'file',
-            // ) 
             'settings' => array(
                 'file_extensions'  => 'pdf', #attach only pdf files
             )
