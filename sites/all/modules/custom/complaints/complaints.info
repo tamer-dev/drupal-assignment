@@ -1,0 +1,7 @@
+name = Complaints
+description = This module allow Guest Users to add complaints as new content type
+core = 7.x
+files[] = complaints.install
+files[] = complaints.module
+dependencies[] = views:views
+dependencies[] = users_management:users_management

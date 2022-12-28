@@ -1,0 +1,195 @@
+<?php
+/**
+ * Implements hook_install().
+ */
+function complaints_install() {
+    node_types_rebuild();
+    $types = node_type_get_types();
+    //   node_add_body_field($types['complaint']); 
+    add_custom_fields();
+
+    #Guest users can create a new complaint
+    $p=array('create complaint content');
+    $role =user_role_load_by_name("anonymous user");
+    user_role_grant_permissions($role->rid, $p);
+    // permissions_grant_permissions('Manager',$p);
+
+}
+
+
+function _complaints_installed_fields() {
+    // $t = get_t();
+    return array(
+        'complaint_name' => array(
+            'field_name' => 'complaint_name',
+            'label' => 'Name',
+            'type' => 'text'
+        ),
+        'email' => array(
+            'field_name' => 'email',
+            'label' => 'Email',
+            'type' => 'text'
+        ),
+        'phone' => array(
+            'field_name' => 'phone',
+            'label' => 'Phone',
+            'type' => 'text'
+        ),
+        'complaint_type' => array(
+            'field_name' => 'complaint_type',
+            'label' => 'Complaint Type',
+            'type' => 'list_text',
+            'cardinality' => 1,
+            'settings' => array(
+                'allowed_values'  => array(
+                    'regular' => 'Regular',
+                    'urgent' => 'Urgent',
+                    'confidential' => 'Confidential',
+                ), 
+            )
+        ),
+        'file_attachment' => array(
+            'field_name' => 'file_attachment',
+            'label' => 'File Attachment',
+            'type' => 'file',
+            // 'settings' => array(
+            //     'file_extensions'  => 'pdf', 
+            // )
+        ),
+        'workflow_status' => array(
+            'field_name' => 'workflow_status',
+            'label' => 'Workflow Status',
+            'type' => 'list_text',
+            'cardinality' => 1,
+            'settings' => array(
+                'allowed_values'  => array(
+                    'open' => 'Open',
+                    'in_progress' => 'In Progress',
+                    'rejected' => 'Rejected',
+                    'closed' => 'Closed',
+                ), 
+            )
+        ),
+    );
+}
+
+function _complaints_installed_instances() {
+    // $t = get_t();
+    return array(
+        'complaint_name' => array(
+            'field_name' => 'complaint_name',
+            'type' => 'text',
+            'label' => 'Name',
+            'widget' => array(
+                'type' => 'text_textfield'
+            ),
+        ),
+        'email' => array(
+            'field_name' => 'email',
+            'type' => 'text',
+            'label' => 'Email',
+            'widget' => array(
+                'type' => 'text_textfield'
+            ),
+        ),
+        'phone' => array(
+            'field_name' => 'phone',
+            'type' => 'text',
+            'label' => 'Phone',
+            'widget' => array(
+                'type' => 'text_textfield'
+            ),
+        ),
+        'complaint_type' => array(
+            'field_name' => 'complaint_type',
+            'type' => 'list_text',
+            'label' => 'Complaint Type',
+            'widget' => array(
+                'type' => 'options_select',
+            ) 
+        ),
+        'file_attachment' => array(
+            'field_name' => 'file_attachment',
+            'type' => 'file',
+            'label' => 'File Attachment',
+            // 'widget' => array(
+            //     'type' => 'file',
+            // ) 
+            'settings' => array(
+                'file_extensions'  => 'pdf', #attach only pdf files
+            )
+        ),
+        'workflow_status' => array(
+            'field_name' => 'workflow_status',
+            'type' => 'list_text',
+            'label' => 'Workflow Status',
+            'default_value' =>array("open"),
+            'widget' => array(
+                'type' => 'options_select',
+            )
+        )
+    );
+
+    // $instance = array(
+    //     'field_name' => 'user_fullname',
+    //     'entity_type' => 'user',
+    //     'label' => 'The user\'s full name',
+    //     'bundle' => 'user',
+    //     'required' => true,
+    //    //  'widget' => array(
+    //    //      'type'=>'options_select',
+    //    //  )
+    // );
+}
+function get_months() {
+    $months = array( '01', '02', '03','12');
+    return $months;
+  }
+function add_custom_fields() {
+    foreach (_complaints_installed_fields() as $key =>$field) {
+        // if(!field_info_field($key)) {
+            field_create_field($field);
+        // }
+    }
+    foreach (_complaints_installed_instances() as $fieldinstance) {
+        if($fieldinstance){
+            $fieldinstance['entity_type'] = 'node';
+            $fieldinstance['bundle'] = 'complaint';
+            // print_r($fieldinstance);
+            field_create_instance($fieldinstance);
+        }
+        
+        
+    }
+}
+
+function complaints_uninstall() {
+    $ournewtype = 'complaint';
+    // deleteNodes($ournewtype);
+    delete_custom_fields();
+    // node_type_delete($ournewtype);
+    field_purge_batch(500);
+}
+
+function deleteNodes($node_type)
+{
+    $sql = 'SELECT nid FROM {node} n WHERE n.type = :type';
+    $result = db_query($sql, array(':type' => $node_type));
+    $nodeids = array();
+    foreach ($result as $row) {
+        $nodeids[] = $row->nid;
+    }
+    node_delete_multiple($nodeids);
+}
+
+function delete_custom_fields() {
+    foreach (array_keys(_complaints_installed_fields()) as $field) {
+        if(field_info_field($field)) {
+            field_delete_field($field);
+        }
+    }
+    $instances = field_info_instances('node', 'complaint');
+    foreach ($instances as $instance_name => $fieldinstance) {
+        field_delete_instance($fieldinstance);
+    }
+}

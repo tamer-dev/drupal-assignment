@@ -1,0 +1,3 @@
+name = Users Management
+description = This module add new features for user core module
+core = 7.x

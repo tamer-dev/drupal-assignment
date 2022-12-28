@@ -1,0 +1,136 @@
+<?php
+/** * Implements hook_install(). * */
+function users_management_install() {
+    add_fields();
+    add_roles();
+}
+
+/** * Implements hook_uninstall(). * */
+// function users_management_uninstall() {
+//     delete_custom_fields(array('first_name','last_name','job'));
+// }
+
+/**
+ * Implements hook_block_info().
+ */
+function users_management_block_info() {
+    // print_r(block_list('content'));
+    $blocks['user_info'] = array(
+      // The name that will appear in the block list.
+      'info' => 'User info',
+      // Default setting.
+      'status' => TRUE,
+      'region' => 'header',
+      'visibility' => BLOCK_CUSTOM_ENABLED,
+      'pages' => '*',
+    );
+    return $blocks;
+}
+
+function users_management_block_view($delta = '') {
+    switch ($delta) {
+      case 'user_info':
+        global $user;
+        $first_name = "";
+        $last_name = "";
+        $job = "";
+        $block['subject']='';
+        $block['content']='';
+        if($user->uid){
+            $name = $user->name;
+            $user_mail = $user->mail;
+            
+            $user = user_load($user->uid);
+            $first_name_field = field_get_items('user', $user, 'first_name');
+            $last_name_field = field_get_items('user', $user, 'last_name');
+            $job_field = field_get_items('user', $user, 'field_job');
+
+            if($first_name_field ) $first_name = $first_name_field[0]['value'];
+            if($last_name_field) $last_name = $last_name_field[0]['value'];
+            if($job_field) $job = $job_field[0]['value'];
+
+            if ($first_name || $last_name  ) {
+                $name = $first_name . " " . $last_name;
+            }
+            
+            $items = array($name,$user_mail,$job);
+        
+            $block['subject'] = 'user data';
+            $block['content'] = theme('item_list', array(
+                        'items' => $items));
+        }
+       
+      return $block;
+    }
+    
+ }
+
+function add_fields()
+{
+    $fields = [
+        'first_name'=>[
+            'field_name' => 'first_name',
+            'field_lable' => 'First Name',
+        ],
+        'last_name'=>[
+            'field_name' => 'last_name',
+            'field_lable' => 'Last Name',
+        ],
+        'job'=>[
+            'field_name' => 'job',
+            'field_lable' => 'Job',
+        ]
+    ];
+    foreach ($fields as $field) {
+        create_field($field['field_name'] ,$field['field_lable']  );
+    }
+}
+
+function create_field($field_name ,$lable ,$type='text' )
+{
+    if(!field_info_field($field_name)) {
+        // field_delete_field('user_fullname');
+        $field = array(
+            'field_name' => $field_name,
+            'type' => $type,
+        );
+        field_create_field($field);
+        $instance = array(
+            'field_name' => $field_name,
+            'entity_type' => 'user',
+            'label' => $lable,
+            'bundle' => 'user',
+        );
+        field_create_instance($instance);
+    }
+}
+
+function add_roles()
+{
+    $roles = user_roles(TRUE);
+    if (!in_array('Manager', $roles)) {
+        $role1 = new stdClass();
+        $role1->name = 'Manager';
+        user_role_save($role1);
+    }
+    if (!in_array('Viewer', $roles)) {
+       $role2 = new stdClass();
+       $role2->name = 'Viewer';
+       user_role_save($role2);
+    }
+    //  $photographer_role = user_role_load_by_name('photographer');
+    //  $photographer_id = $photographer_role->rid;
+}
+
+// function delete_custom_fields($fields)
+// {
+//     foreach ($fields as $field) {
+//         if(field_info_field($field)) {
+//             field_delete_field($field);
+//         }
+//     } 
+//     $instances = field_info_instances('user');
+//     foreach ($instances as $instance_name => $fieldinstance) {
+//         field_delete_instance($fieldinstance);
+//     } 
+// }
