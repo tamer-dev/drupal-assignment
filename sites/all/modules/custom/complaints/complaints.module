@@ -72,22 +72,8 @@ function complaints_theme() {
 }
 
 function complaints_form_alter(&$form, &$form_state, $form_id) {
-    // Check when the right form is passed.
-    // print_r($form_id );
-    // Add the check box.
-    if($form_id == 'complaint_node_form'){
-        // $form['certify'] = array(
-        //     '#type' => 'checkbox',
-        //     '#title' => t('I certify that this is my true name' .$form_id),
-        //   );
-        //   $form['form_eid'] = array(
-        //     '#type' => 'text_textfield',
-        //     '#title' => t('I certify --------------'),
-        //   );
-        // $form['email']['#default_value'] = 'open';
-        // $form["workflow_status[und]"]['#default_value'] = 'open';
 
-        
+    if($form_id == 'complaint_node_form'){
         #The attachment field appears only if the complaint type is confidential.
         $form['file_attachment']['#states'] = array(
             'visible' => array(
@@ -96,76 +82,10 @@ function complaints_form_alter(&$form, &$form_state, $form_id) {
                 ),
             ),
         );
-
-        //  //create a list of radio boxes that will toggle the  textbox
-        // //below if 'other' is selected
-        // $form['workflow_status']['und']['#default_value'] =array('open');
         $form['workflow_status']['und']['#default_value'][0] = 'open';
-    
-        // $form['colour_select'] = [
-        //     '#type' => 'select',
-        //     '#title' => 'Pick a colour',
-        //     '#default_value' =>  array('white'),
-        //     '#options' => [
-        //     'blue' => 'Blue',
-        //     'white' => 'White',
-        //     'black' => 'Black',
-        //     'other' => 'Other',
-        //     ],
-        //     '#attributes' => [
-        //     //define static name and id so we can easier select it
-        //     // 'id' => 'colour_select',
-        //     'name' => 'field_colour_select',
-        //     ],
-        // ];
-        // //this textfield will only be shown when the option 'Other'
-        // //is selected from the radios above.
-        // $form['custom_colour'] = [
-        //     '#type' => 'textfield',
-        //     '#size' => '60',
-        //     '#default_value' =>  1,
-        //     '#placeholder' => 'Enter favourite colour',
-        //     '#attributes' => [
-        //     'id' => 'custom-colour',
-        //     ],
-            
-        //     '#states' => [
-        //     //show this textfield only if the radio 'other' is selected above
-        //     // 'invisible' => [
-        //     //     // Don't mistake :input for the type of field or for a css selector --
-        //     //     // it's a jQuery selector. 
-        //     //     // You can always use :input or any other jQuery selector here, no matter 
-        //     //     // whether your source is a select, radio or checkbox element.
-        //     //     ':input[name="field_colour_select"]' => ['value' => 'other'],
-        //     // ],
-        //     ],
-        // ];
     }
-    
-    // if ($form_id == 'module_formname') {
-      
-      // Add the check box.
-    //   $form['email'] = array(
-    //     '#type' => 'text',
-    //     '#title' => 'I certify that this is my true name',
-    //   );
-    // }
   }
 
-// /**
-//  * Implements hook_uninstall().
-//  */
-// function complaints_uninstall() {
-//     $ournewtype = 'complaint';
-//     $sql = 'SELECT nid FROM {node} n WHERE n.type = :type';
-//     $result = db_query($sql, array(':type' => $ournewtype));
-//     $nodeids = array();
-//     foreach ($result as $row) {
-//         $nodeids[] = $row->nid;
-//     }
-//     node_delete_multiple($nodeids);
-//     node_type_delete($ournewtype);
-// }
 
 
 

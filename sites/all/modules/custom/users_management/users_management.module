@@ -43,7 +43,7 @@ function users_management_block_view($delta = '') {
             $user = user_load($user->uid);
             $first_name_field = field_get_items('user', $user, 'first_name');
             $last_name_field = field_get_items('user', $user, 'last_name');
-            $job_field = field_get_items('user', $user, 'field_job');
+            $job_field = field_get_items('user', $user, 'job');
 
             if($first_name_field ) $first_name = $first_name_field[0]['value'];
             if($last_name_field) $last_name = $last_name_field[0]['value'];
