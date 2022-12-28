@@ -32,10 +32,16 @@ function complaints_menu() {
         'title'             =>  'Complaints List',  //page title
         'description'       =>  'Complaints Information',  //description show when mouse hover on link
         'page callback'     =>  'complaints_list',  //callback function which is invoked when menu item is called.
-        'access callback'   =>  true,  //any user can access this page
+        'access callback'   =>  'my_custom_callback',  //any user can access this page
        );
      return $items;
 }
+function my_custom_callback() { 
+    global $user; 
+    if (in_array('Manager', $user->roles) || in_array('Viewer', $user->roles)) {
+       return TRUE; 
+     }
+   } 
 
 
 function complaints_list() {
@@ -71,6 +77,10 @@ function complaints_theme() {
     return $themes;
 }
 
+/**
+ * Implements hooc_form_alter().
+ *
+ */
 function complaints_form_alter(&$form, &$form_state, $form_id) {
 
     if($form_id == 'complaint_node_form'){
@@ -83,8 +93,15 @@ function complaints_form_alter(&$form, &$form_state, $form_id) {
             ),
         );
         $form['workflow_status']['und']['#default_value'][0] = 'open';
+        
+        global $user;
+        if (in_array('Manager', $user->roles) ) {
+            $form['workflow_status']['#disabled'] = FALSE;
+        }else{
+            $form['workflow_status']['#disabled'] = TRUE;
+        }
     }
-  }
+}
 
 
 
