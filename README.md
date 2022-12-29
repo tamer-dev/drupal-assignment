@@ -9,7 +9,7 @@
 
 3. Follow drupal installation steps
 
-4. During initial Drupal setup you will need database information you will find it in docker-compose.yml.
+4. During initial Drupal setup you will need database information you will find it in docker-compose.yml (choose PostgreSQL database).
 
 
 
